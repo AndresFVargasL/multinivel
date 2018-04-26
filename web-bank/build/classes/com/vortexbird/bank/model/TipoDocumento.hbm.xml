@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated Apr 25, 2018 10:30:09 PM by Hibernate Tools 5.1.0.Final -->
+<hibernate-mapping>
+    <class name="com.vortexbird.bank.model.TipoDocumento" table="tipo_documento" schema="public" optimistic-lock="version">
+        <id name="tdocId" type="java.lang.Long">
+            <column name="tdoc_id" />
+            <generator class="assigned" />
+        </id>
+        <property name="nombre" type="java.lang.String">
+            <column name="nombre" not-null="true" />
+        </property>
+        <property name="activo" type="java.lang.String">
+            <column name="activo" length="1" not-null="true" />
+        </property>
+        <set name="clientes" table="cliente" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="tdoc_id" />
+            </key>
+            <one-to-many class="com.vortexbird.bank.model.Cliente" />
+        </set>
+    </class>
+</hibernate-mapping>

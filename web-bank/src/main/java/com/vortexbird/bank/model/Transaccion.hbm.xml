@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated Apr 25, 2018 10:30:09 PM by Hibernate Tools 5.1.0.Final -->
+<hibernate-mapping>
+    <class name="com.vortexbird.bank.model.Transaccion" table="transaccion" schema="public" optimistic-lock="version">
+        <id name="tranId" type="java.lang.Long">
+            <column name="tran_id" />
+            <generator class="identity" />
+        </id>
+        <many-to-one name="cuenta" class="com.vortexbird.bank.model.Cuenta" fetch="select">
+            <column name="cuen_id" />
+        </many-to-one>
+        <many-to-one name="tipoTransaccion" class="com.vortexbird.bank.model.TipoTransaccion" fetch="select">
+            <column name="titr_id" />
+        </many-to-one>
+        <many-to-one name="usuario" class="com.vortexbird.bank.model.Usuario" fetch="select">
+            <column name="usu_usuario" />
+        </many-to-one>
+        <property name="valor" type="java.lang.Double">
+            <column name="valor" precision="30" scale="6" not-null="true" />
+        </property>
+        <property name="fecha" type="java.util.Date">
+            <column name="fecha" length="29" not-null="true" />
+        </property>
+    </class>
+</hibernate-mapping>

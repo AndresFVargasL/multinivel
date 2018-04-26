@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated Apr 25, 2018 10:30:09 PM by Hibernate Tools 5.1.0.Final -->
+<hibernate-mapping>
+    <class name="com.vortexbird.bank.model.Cuenta" table="cuenta" schema="public" optimistic-lock="version">
+        <id name="cuenId" type="java.lang.String">
+            <column name="cuen_id" />
+            <generator class="assigned" />
+        </id>
+        <many-to-one name="cliente" class="com.vortexbird.bank.model.Cliente" fetch="select">
+            <column name="clie_id" precision="30" scale="0" />
+        </many-to-one>
+        <property name="saldo" type="java.lang.Double">
+            <column name="saldo" precision="30" scale="6" not-null="true" />
+        </property>
+        <property name="clave" type="java.lang.String">
+            <column name="clave" not-null="true" />
+        </property>
+        <property name="activa" type="java.lang.String">
+            <column name="activa" length="1" not-null="true" />
+        </property>
+        <set name="cuentaRegistradas" table="cuenta_registrada" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="cuen_id" />
+            </key>
+            <one-to-many class="com.vortexbird.bank.model.CuentaRegistrada" />
+        </set>
+        <set name="transaccions" table="transaccion" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="cuen_id" />
+            </key>
+            <one-to-many class="com.vortexbird.bank.model.Transaccion" />
+        </set>
+    </class>
+</hibernate-mapping>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC
+"-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+    <session-factory>
+        <property name="hibernate.bytecode.use_reflection_optimizer">false</property>
+        <property name="hibernate.connection.driver_class">org.postgresql.Driver</property>
+        <property name="hibernate.connection.password">postgres</property>
+        <property name="hibernate.connection.url">jdbc:postgresql://127.0.0.1:5432/bank</property>
+        <property name="hibernate.connection.username">postgres</property>
+        <mapping resource="com/vortexbird/bank/model/Transaccion.hbm.xml" />
+        <mapping resource="com/vortexbird/bank/model/Cuenta.hbm.xml" />
+        <mapping resource="com/vortexbird/bank/model/TipoDocumento.hbm.xml" />
+        <mapping resource="com/vortexbird/bank/model/TipoTransaccion.hbm.xml" />
+        <mapping resource="com/vortexbird/bank/model/TipoUsuario.hbm.xml" />
+        <mapping resource="com/vortexbird/bank/model/CuentaRegistrada.hbm.xml" />
+        <mapping resource="com/vortexbird/bank/model/Usuario.hbm.xml" />
+        <mapping resource="com/vortexbird/bank/model/Cliente.hbm.xml" />
+    </session-factory>
+</hibernate-configuration>

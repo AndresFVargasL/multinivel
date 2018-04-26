@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated Apr 25, 2018 10:30:09 PM by Hibernate Tools 5.1.0.Final -->
+<hibernate-mapping>
+    <class name="com.vortexbird.bank.model.Usuario" table="usuario" schema="public" optimistic-lock="version">
+        <id name="usuUsuario" type="java.lang.String">
+            <column name="usu_usuario" />
+            <generator class="assigned" />
+        </id>
+        <many-to-one name="tipoUsuario" class="com.vortexbird.bank.model.TipoUsuario" fetch="select">
+            <column name="tius_id" />
+        </many-to-one>
+        <property name="clave" type="java.lang.String">
+            <column name="clave" not-null="true" />
+        </property>
+        <property name="identificacion" type="java.lang.Long">
+            <column name="identificacion" precision="30" scale="0" not-null="true" />
+        </property>
+        <property name="nombre" type="java.lang.String">
+            <column name="nombre" not-null="true" />
+        </property>
+        <property name="activo" type="java.lang.String">
+            <column name="activo" length="1" not-null="true" />
+        </property>
+        <set name="transaccions" table="transaccion" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="usu_usuario" />
+            </key>
+            <one-to-many class="com.vortexbird.bank.model.Transaccion" />
+        </set>
+    </class>
+</hibernate-mapping>
