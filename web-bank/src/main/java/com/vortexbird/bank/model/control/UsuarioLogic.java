@@ -4,7 +4,9 @@ import com.vortexbird.bank.dataaccess.dao.*;
 import com.vortexbird.bank.dto.mapper.IUsuarioMapper;
 import com.vortexbird.bank.exceptions.*;
 import com.vortexbird.bank.model.*;
+import com.vortexbird.bank.model.dto.Response;
 import com.vortexbird.bank.model.dto.UsuarioDTO;
+import com.vortexbird.bank.utilities.Constantes;
 import com.vortexbird.bank.utilities.Utilities;
 
 import org.slf4j.Logger;
@@ -414,5 +416,37 @@ public class UsuarioLogic implements IUsuarioLogic {
         }
 
         return list;
+    }
+    
+    @Transactional(readOnly = true)
+    public Response autenticar(String usuUsuario, String clave) {
+        log.info("### Autenticando al usuario con login: << "+usuUsuario+" >> ###");
+
+        Response response = null;
+
+        try {
+            List<Usuario> consultaUsuarios = findByCriteria(new Object[]{"usuUsuario",true, usuUsuario, "=",
+            															"clave",true, clave, "=",
+            															"activo",true, Constantes.ESTADO_ACTIVO, "="}, null, null);
+            response = new Response();
+            if(consultaUsuarios == null || consultaUsuarios.isEmpty()){
+            	response.setCodigo("1");
+            	response.setMensaje("Usuario o Clave incorrectos.");
+            	response.setNombre("Usuario o Clave incorrectos.");
+            }else{
+            	response.setCodigo("0");
+            	response.setMensaje("Usuario autenticado exitosamente");
+            	response.setNombre(consultaUsuarios.get(0).getNombre().trim());
+            }
+            log.info("### Usuario con login: << "+usuUsuario+" >> autenticado exitosamente ###");
+        } catch (Exception e) {
+        	response = new Response();
+        	response.setCodigo("1");
+        	response.setMensaje("Usuario o Clave incorrectos.");
+        	response.setNombre("Usuario o Clave incorrectos.");
+            log.error("#### Autenticación Fallida ####", e);
+        }
+
+        return response;
     }
 }

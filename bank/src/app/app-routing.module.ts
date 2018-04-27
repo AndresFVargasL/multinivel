@@ -4,10 +4,12 @@ import { RouterModule, Routes } from '@angular/router';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { LoginComponent } from './login/login.component';
 import { CoverComponent } from './cover/cover.component';
+import { ConsignarComponent } from './consignar/consignar.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/cover', pathMatch: 'full' },
   { path: 'dashboard', component: DashboardComponent },
+  { path: 'consignar', component: ConsignarComponent },
   { path: 'login', component: LoginComponent },
   { path: 'cover', component: CoverComponent }
 ]

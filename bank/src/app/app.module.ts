@@ -3,12 +3,14 @@ import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms'; // <-- NgModel lives here
 import { HttpClientModule } from '@angular/common/http'; // <-- Http requests lives here
 
+import { AppRoutingModule } from './/app-routing.module';
 
 import { AppComponent } from './app.component';
-import { AppRoutingModule } from './/app-routing.module';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { LoginComponent } from './login/login.component';
 import { CoverComponent } from './cover/cover.component';
+import { ConsignarComponent } from './consignar/consignar.component';
+import { UsuarioService } from './usuario.service';
 
 
 @NgModule({
@@ -16,7 +18,8 @@ import { CoverComponent } from './cover/cover.component';
     AppComponent,
     DashboardComponent,
     LoginComponent,
-    CoverComponent
+    CoverComponent,
+    ConsignarComponent
   ],
   imports: [
     BrowserModule,
@@ -24,7 +27,7 @@ import { CoverComponent } from './cover/cover.component';
     AppRoutingModule,
     HttpClientModule
   ],
-  providers: [],
+  providers: [UsuarioService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

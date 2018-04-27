@@ -1,6 +1,8 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Login } from '../model/login';
+import { UsuarioService } from '../usuario.service';
+import { Response } from '../model/Response';
 
 @Component({
   selector: 'app-login',
@@ -10,10 +12,13 @@ import { Login } from '../model/login';
 export class LoginComponent implements OnInit {
   
   title = 'Web Bank'; 
+  response: Response;
+  codigo: String;
   
   @Input() loginUser: Login;
 
-  constructor(private router: Router) { 
+  constructor(private router: Router,
+              private usuarioService: UsuarioService) { 
     this.loginUser = new Login();
   }
 
@@ -21,12 +26,16 @@ export class LoginComponent implements OnInit {
   }
 
   login(): void{
+    this.usuarioService.authUser(this.loginUser)
+    .subscribe(response => {
 
-    if(this.loginUser.user == "admin" && this.loginUser.password == "123456"){
-      this.router.navigate(['/dashboard']);
-    }else{
-      console.log("Usuario incorrecto");
-    }
+      this.codigo = response.codigo;
+      if(this.codigo == "0"){
+        this.router.navigate(['/dashboard']);
+      }else{
+        console.log("Usuario incorrecto");
+      }
+    
+    });
   }
-
 }

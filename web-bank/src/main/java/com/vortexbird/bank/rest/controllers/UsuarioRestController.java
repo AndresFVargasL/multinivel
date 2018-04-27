@@ -2,6 +2,7 @@ package com.vortexbird.bank.rest.controllers;
 
 import com.vortexbird.bank.dto.mapper.IUsuarioMapper;
 import com.vortexbird.bank.model.*;
+import com.vortexbird.bank.model.dto.Response;
 import com.vortexbird.bank.model.dto.UsuarioDTO;
 import com.vortexbird.bank.presentation.businessDelegate.IBusinessDelegatorView;
 
@@ -93,4 +94,19 @@ public class UsuarioRestController {
 
         return null;
     }
+    
+    @GetMapping(value = "/autenticar/{usuUsuario}/{clave}")
+    public Response autenticarUsuario(
+    		@PathVariable("usuUsuario")String usuUsuario,
+    		@PathVariable("clave")String clave) throws Exception {
+        try {
+        	return this.businessDelegatorView.autenticar(usuUsuario, clave);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        }
+
+        return null;
+    }
+    
+   
 }

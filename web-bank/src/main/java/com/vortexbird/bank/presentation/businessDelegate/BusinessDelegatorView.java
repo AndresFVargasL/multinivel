@@ -27,6 +27,7 @@ import com.vortexbird.bank.model.control.UsuarioLogic;
 import com.vortexbird.bank.model.dto.ClienteDTO;
 import com.vortexbird.bank.model.dto.CuentaDTO;
 import com.vortexbird.bank.model.dto.CuentaRegistradaDTO;
+import com.vortexbird.bank.model.dto.Response;
 import com.vortexbird.bank.model.dto.TipoDocumentoDTO;
 import com.vortexbird.bank.model.dto.TipoTransaccionDTO;
 import com.vortexbird.bank.model.dto.TipoUsuarioDTO;
@@ -566,4 +567,9 @@ public class BusinessDelegatorView implements IBusinessDelegatorView {
         throws Exception {
         tipoUsuarioLogic.validateTipoUsuario(tipoUsuario);
     }
+
+	@Override
+	public Response autenticar(String usuUsuario, String clave) {
+		return usuarioLogic.autenticar(usuUsuario, clave);
+	}
 }

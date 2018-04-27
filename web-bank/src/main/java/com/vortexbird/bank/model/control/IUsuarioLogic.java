@@ -1,6 +1,7 @@
 package com.vortexbird.bank.model.control;
 
 import com.vortexbird.bank.model.Usuario;
+import com.vortexbird.bank.model.dto.Response;
 import com.vortexbird.bank.model.dto.UsuarioDTO;
 
 import java.math.BigDecimal;
@@ -55,4 +56,6 @@ public interface IUsuarioLogic {
     public List<UsuarioDTO> getDataUsuario() throws Exception;
 
     public void validateUsuario(Usuario usuario) throws Exception;
+    
+    public Response autenticar(String usuUsuario, String clave);
 }
