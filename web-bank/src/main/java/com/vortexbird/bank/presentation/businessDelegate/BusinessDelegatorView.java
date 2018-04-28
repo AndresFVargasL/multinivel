@@ -31,6 +31,7 @@ import com.vortexbird.bank.model.dto.Response;
 import com.vortexbird.bank.model.dto.TipoDocumentoDTO;
 import com.vortexbird.bank.model.dto.TipoTransaccionDTO;
 import com.vortexbird.bank.model.dto.TipoUsuarioDTO;
+import com.vortexbird.bank.model.dto.TransaccionAngular;
 import com.vortexbird.bank.model.dto.TransaccionDTO;
 import com.vortexbird.bank.model.dto.UsuarioDTO;
 import com.vortexbird.bank.presentation.businessDelegate.IBusinessDelegatorView;
@@ -571,5 +572,15 @@ public class BusinessDelegatorView implements IBusinessDelegatorView {
 	@Override
 	public Response autenticar(String usuUsuario, String clave) {
 		return usuarioLogic.autenticar(usuUsuario, clave);
+	}
+
+	@Override
+	public Response consignar(TransaccionAngular transaccion) throws Exception {
+		return transaccionLogic.consignar(transaccion);
+	}
+
+	@Override
+	public Response retirar(TransaccionAngular transaccion) throws Exception {
+		return transaccionLogic.retirar(transaccion);
 	}
 }

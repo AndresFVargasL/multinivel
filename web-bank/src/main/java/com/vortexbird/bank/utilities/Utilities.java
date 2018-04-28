@@ -368,5 +368,23 @@ public class Utilities {
 
 		return where;
 	}
+	
+	public static String subStringCuenta(String numeroCuenta) throws Exception{
+		String nuevoNumeroCuenta = "";
+		
+		try {
+			for(int i = 0; i<numeroCuenta.trim().length(); i+=4) {
+                if(i==0) {
+                    nuevoNumeroCuenta = numeroCuenta.substring(i, i+4);
+                }else {
+                    nuevoNumeroCuenta += "-" + numeroCuenta.substring(i, i+4);
+                } 
+            }
+		} catch (Exception e) {
+			log.error(e.getMessage());
+			throw e;
+		}
+		return nuevoNumeroCuenta;
+	}
 
 }

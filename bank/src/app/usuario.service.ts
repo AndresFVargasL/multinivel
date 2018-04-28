@@ -14,9 +14,10 @@ export class UsuarioService {
 
   private urlAuth: string;
   public userInSession: string;
+  public codigo: string;
 
   constructor(private http: HttpClient) { 
-    this.urlAuth = 'http://127.0.0.1:8080/web-bank/rest/controllers/usuario/autenticar';
+    this.urlAuth = 'http://10.199.203.138:8080/web-bank/rest/controllers/usuario/autenticar';
   }
 
   /** Log a message in console */
@@ -29,18 +30,21 @@ export class UsuarioService {
     let clave:String  = loginUser.password;
 
     if(usuario == ""){
-      usuario = "";
+      usuario = "%20";
     }
 
     if(clave == ""){
-      clave = "";
+      clave = "%20";
     }
 
     const url = `${this.urlAuth}/${usuario}/${clave}`;
     return this.http.get<Response>(url)
     .pipe(
-      tap(usuario => this.userInSession = usuario.nombre),
-      catchError(this.handleError<Response>(`No existe el usuario con login: ${loginUser.user}`))
+      tap(usuario => {
+        this.userInSession = usuario.nombre;
+        this.codigo = usuario.usuario;
+      }),
+      catchError(this.handleError<Response>(`Error de comunicación con el web service al tratar de autenticar al usuario : ${loginUser.user}`))
     );
   }
 

@@ -33,7 +33,7 @@ export class LoginComponent implements OnInit {
       if(this.codigo == "0"){
         this.router.navigate(['/dashboard']);
       }else{
-        console.log("Usuario incorrecto");
+        console.log(response.mensaje);
       }
     
     });

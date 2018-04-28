@@ -1,0 +1,106 @@
+<nav class="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow">
+    <a class="navbar-brand col-sm-3 col-md-2 mr-0" routerLink="/dashboard">Web Bank</a>
+    <input class="form-control form-control-dark w-100" disabled="true" [(ngModel)]="user" name="user" aria-label="Search">
+    <ul class="navbar-nav px-3">
+      <li class="nav-item text-nowrap">
+        <a class="nav-link" routerLink="/login">Salir</a>
+      </li>
+    </ul>
+  </nav>
+  
+  <div class="container-fluid">
+    <div class="row">
+      <nav class="col-md-2 d-none d-md-block bg-light sidebar">
+        <div class="sidebar-sticky">
+          <ul class="nav flex-column">
+            <li class="nav-item">
+              <a class="nav-link" routerLink="/dashboard">
+                <span data-feather="home"></span>
+                Inicio
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" routerLink="/consignar">
+                <span data-feather="file"></span>
+                Consignaciones
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" routerLink="/retirar">
+                <span data-feather="shopping-cart"></span>
+                Retiros
+                <span class="sr-only">(current)</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" routerLink="/dashboard">
+                <span data-feather="users"></span>
+                Clientes
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" routerLink="/dashboard">
+                <span data-feather="bar-chart-2"></span>
+                Reportes
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" routerLink="/dashboard">
+                <span data-feather="layers"></span>
+                Integraciones
+              </a>
+            </li>
+          </ul>
+  
+        </div>
+      </nav>
+  
+      <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+          <h1 class="h2" style="padding-left: 40%;">Retiros</h1>
+        </div>
+        <form>
+        <div class="mb-3">
+          <label for="address">Número de Cuenta</label>
+          <input type="text" class="form-control" [(ngModel)]="transaccion.cuenta" name="cuenta" id="cuenta" placeholder="0000-0000-0000-0000" mask="0000-0000-0000-0000">
+          <div class="invalid-feedback">
+            Por favor ingrese su numero de cuenta
+          </div>
+        </div>
+
+        <div class="mb-3">
+            <label for="address">Clave de la Cuenta</label>
+            <input type="password" class="form-control" [(ngModel)]="transaccion.clave" name="clave" id="password" placeholder="Clave de la cuenta">
+            <div class="invalid-feedback">
+              Por favor ingrese la clave de la cuenta
+            </div>
+          </div>
+  
+        <div class="mb-3">
+            <label for="address">Cédula del Cliente</label>
+            <input type="number" [(ngModel)]="transaccion.cedula" name="cedula" class="form-control" id="cliente" placeholder="Cedula del Cliente">
+            <div class="invalid-feedback">
+              Por favor ingrese la cedula del cliente
+            </div>
+        </div>
+  
+        <div class="mb-3">
+          <label for="address">Valor a Retirar</label>
+          <input currencyMask [(ngModel)]="transaccion.valor" name="valor" [options]="{ prefix: '$ ', thousands: '.', decimal: ',', align: 'left' }" class="form-control" id="valor" placeholder="$ 0.00" />
+          <div class="invalid-feedback">
+            Por favor ingrese el valor a consignar
+          </div>
+        </div>
+  
+        <hr class="mb-4">
+        <button class="btn btn-primary btn-lg btn-block" type="submit" (click)="retirar()">Retirar</button>
+        <button class="btn btn-danger btn-lg btn-block" type="submit" (click)="limpiar()">Limpiar</button>
+        <hr class="mb-4">
+        {{mensaje}}
+        <hr class="mb-4">
+        </form>
+  
+      </main>
+    </div>
+  </div>
+  

@@ -4,7 +4,10 @@ import com.vortexbird.bank.dataaccess.dao.*;
 import com.vortexbird.bank.dto.mapper.ITransaccionMapper;
 import com.vortexbird.bank.exceptions.*;
 import com.vortexbird.bank.model.*;
+import com.vortexbird.bank.model.dto.Response;
+import com.vortexbird.bank.model.dto.TransaccionAngular;
 import com.vortexbird.bank.model.dto.TransaccionDTO;
+import com.vortexbird.bank.utilities.Constantes;
 import com.vortexbird.bank.utilities.Utilities;
 
 import org.slf4j.Logger;
@@ -71,6 +74,9 @@ public class TransaccionLogic implements ITransaccionLogic {
     */
     @Autowired
     IUsuarioLogic logicUsuario3;
+    
+    @Autowired
+    private IClienteLogic clienteLogic;
 
     public void validateTransaccion(Transaccion transaccion)
         throws Exception {
@@ -124,7 +130,7 @@ public class TransaccionLogic implements ITransaccionLogic {
 
             validateTransaccion(entity);
 
-            if (getTransaccion(entity.getTranId()) != null) {
+            if (entity.getTranId() != null && getTransaccion(entity.getTranId()) != null) {
                 throw new ZMessManager(ZMessManager.ENTITY_WITHSAMEKEY);
             }
 
@@ -414,4 +420,280 @@ public class TransaccionLogic implements ITransaccionLogic {
 
         return list;
     }
+    
+    
+    @Override
+    @Transactional(readOnly = false, propagation = Propagation.REQUIRED, rollbackFor=Exception.class)
+    public synchronized Response consignar(TransaccionAngular transaccion) throws Exception {
+    	Response response = null;
+    	
+    	try {
+    		
+    		if (transaccion.getValor() == null) {
+    			throw new Exception("Por favor ingrese el valor a consignar");
+    		}
+    		
+    		if (transaccion.getValor() == 0D) {
+    			throw new Exception("No se puede consignar un valor inferior a $1");
+    		}
+    		
+    		if (transaccion.getValor() < 0D) {
+    			throw new Exception("No se puede consignar un valor inferior a $1");
+    		}
+    		
+    		Double valor = transaccion.getValor();
+    		
+    		if(transaccion.getCuenta() == null){
+    			throw new Exception("Por favor digite la cuenta");
+    		}
+    		
+    		if(transaccion.getCuenta().trim().equals("")){
+    			throw new Exception("Por favor digite la cuenta");
+    		}
+    		
+    		if(transaccion.getCuenta().length() != 16){
+    			throw new Exception("El formato de cuenta es inválido");
+    		}
+    		
+    		String numeroCuenta = Utilities.subStringCuenta(transaccion.getCuenta());
+    		
+    		List<Cuenta> consultaCuenta = logicCuenta1.findByCriteria(new Object[]{"cuenId", true, numeroCuenta, "="}, null, null);
+    		if(consultaCuenta == null || consultaCuenta.isEmpty()){
+    			throw new Exception("No se ha encontrado la cuenta activa o no existe");
+    		}
+    		Cuenta cuenta = consultaCuenta.get(0);
+    		
+    		if(transaccion.getTipoTransaccion() == null){
+    			throw new Exception("No fué posible reconocer el tipo de transacción");
+    		}else if (transaccion.getTipoTransaccion() == 0L){
+    			throw new Exception("No fué posible reconocer el tipo de transacción");
+    		}
+    		
+    		Long tipoTransaccionCuenta = transaccion.getTipoTransaccion();
+    		
+    		List<TipoTransaccion> consultaTipoTransaccion = logicTipoTransaccion2.findByCriteria(new Object[]{"titrId", false, tipoTransaccionCuenta, "=",
+    																									      "activo", true, Constantes.ESTADO_ACTIVO, "="}, null, null);
+    		if(consultaTipoTransaccion == null || consultaTipoTransaccion.isEmpty()){
+    			throw new Exception("No ha sido parametrizado el tipo de transaccion");
+    		}
+    		TipoTransaccion tipoTransaccion = consultaTipoTransaccion.get(0);
+    		
+    		if(transaccion.getUsuario() == null){
+    			throw new Exception("Por favor inicie sesión");
+    		}
+    		
+    		if(transaccion.getUsuario().trim().equals("")){
+    			throw new Exception("Por favor inicie sesión");
+    		}
+    		
+    		String user = transaccion.getUsuario();
+    		
+    		
+    		
+    		List<Usuario> consultaUsuario = logicUsuario3.findByCriteria(new Object[]{"usuUsuario", true, user, "=",
+    																				  "activo", true, Constantes.ESTADO_ACTIVO, "="}, null, null);
+    		
+    		if(consultaUsuario == null || consultaUsuario.isEmpty()){
+    			throw new Exception("No existe el usuario "+user+" o no esta activo");
+    		}
+    		Usuario usuario = consultaUsuario.get(0);
+    		
+    		if(transaccion.getCedula() == null){
+    			throw new Exception("Por favor digite la cedula del cliente");
+    		}else if (transaccion.getCedula() == 0L){
+    			throw new Exception("Por favor digite la cedula del cliente");
+    		}
+    		
+    		Long cedulaCliente = transaccion.getCedula();
+    		
+    		List<Cliente> consultaCliente = clienteLogic.findByCriteria(new Object[]{"clieId", false, cedulaCliente, "=",
+    																				 "activo", true, Constantes.ESTADO_ACTIVO, "="}, null, null);
+    		if(consultaCliente == null || consultaCliente.isEmpty()){
+    			throw new Exception("No existe el cliente con cedula "+cedulaCliente+" o no esta activo");
+    		}
+    		Cliente cliente = consultaCliente.get(0);
+    		
+    		if(!cliente.getClieId().equals(cuenta.getCliente().getClieId())){
+    			throw new Exception("La cuenta no pertenece a la cédula indicada");
+    		}
+    		
+    		Transaccion consignacion = new Transaccion();
+    		consignacion.setTranId(null);
+    		consignacion.setCuenta(cuenta);
+    		consignacion.setTipoTransaccion(tipoTransaccion);
+    		consignacion.setUsuario(usuario);
+    		consignacion.setFecha(new Date());
+    		consignacion.setValor(valor);
+    		
+    		this.saveTransaccion(consignacion);
+    		
+    		cuenta.setSaldo(cuenta.getSaldo() + valor);
+    		cuenta.setActiva(Constantes.ESTADO_ACTIVO);
+    		
+    		logicCuenta1.updateCuenta(cuenta);
+			
+    		response = new Response();
+			response.setCodigo("0");
+			response.setMensaje("Consignación realizada exitosamente");
+			response.setNombre("Consignación realizada exitosamente");
+    		log.info("### Se ha realizado la transacción exitosamente ###");
+		} catch (Exception e) {
+			
+			response = new Response();
+			response.setCodigo("1");
+			response.setMensaje(e.getMessage());
+			response.setNombre(e.getMessage());
+			log.error("#### Transaccion Fallida ####", e);
+		}
+    	
+    	return response;
+    	
+    }
+    
+    @Override
+    @Transactional(readOnly = false, propagation = Propagation.REQUIRED, rollbackFor=Exception.class)
+    public synchronized Response retirar(TransaccionAngular transaccion) throws Exception {
+    	Response response = null;
+    	
+    	try {
+    		
+    		if (transaccion.getValor() == null) {
+    			throw new Exception("Por favor ingrese el valor a retirar");
+    		}
+    		
+    		if (transaccion.getValor() == 0D) {
+    			throw new Exception("No se puede retirar un valor inferior a $1");
+    		}
+    		
+    		if (transaccion.getValor() < 0D) {
+    			throw new Exception("No se puede retirar un valor inferior a $1");
+    		}
+    		
+    		Double valor = transaccion.getValor();
+    		
+    		if(transaccion.getCuenta() == null){
+    			throw new Exception("Por favor digite la cuenta");
+    		}
+    		
+    		if(transaccion.getCuenta().trim().equals("")){
+    			throw new Exception("Por favor digite la cuenta");
+    		}
+    		
+    		if(transaccion.getCuenta().length() != 16){
+    			throw new Exception("El formato de cuenta es inválido");
+    		}
+    		
+    		String numeroCuenta = Utilities.subStringCuenta(transaccion.getCuenta());
+    		
+    		List<Cuenta> consultaCuenta = logicCuenta1.findByCriteria(new Object[]{"cuenId", true, numeroCuenta, "=",
+    																			   "activa", true, Constantes.ESTADO_ACTIVO, "="}, null, null);
+    		if(consultaCuenta == null || consultaCuenta.isEmpty()){
+    			throw new Exception("No se ha encontrado la cuenta activa o no existe");
+    		}
+    		Cuenta cuenta = consultaCuenta.get(0);
+    		
+    		if(transaccion.getTipoTransaccion() == null){
+    			throw new Exception("No fué posible reconocer el tipo de transacción");
+    		}else if (transaccion.getTipoTransaccion() == 0L){
+    			throw new Exception("No fué posible reconocer el tipo de transacción");
+    		}
+    		
+    		Long tipoTransaccionCuenta = transaccion.getTipoTransaccion();
+    		
+    		List<TipoTransaccion> consultaTipoTransaccion = logicTipoTransaccion2.findByCriteria(new Object[]{"titrId", false, tipoTransaccionCuenta, "=",
+    																									      "activo", true, Constantes.ESTADO_ACTIVO, "="}, null, null);
+    		if(consultaTipoTransaccion == null || consultaTipoTransaccion.isEmpty()){
+    			throw new Exception("No ha sido parametrizado el tipo de transaccion");
+    		}
+    		TipoTransaccion tipoTransaccion = consultaTipoTransaccion.get(0);
+    		
+    		if(transaccion.getUsuario() == null){
+    			throw new Exception("Por favor inicie sesión");
+    		}
+    		
+    		if(transaccion.getUsuario().trim().equals("")){
+    			throw new Exception("Por favor inicie sesión");
+    		}
+    		
+    		String user = transaccion.getUsuario();
+    		
+    		
+    		
+    		List<Usuario> consultaUsuario = logicUsuario3.findByCriteria(new Object[]{"usuUsuario", true, user, "=",
+    																				  "activo", true, Constantes.ESTADO_ACTIVO, "="}, null, null);
+    		
+    		if(consultaUsuario == null || consultaUsuario.isEmpty()){
+    			throw new Exception("No existe el usuario "+user+" o no esta activo");
+    		}
+    		Usuario usuario = consultaUsuario.get(0);
+    		
+    		if(transaccion.getCedula() == null){
+    			throw new Exception("Por favor digite la cedula del cliente");
+    		}else if (transaccion.getCedula() == 0L){
+    			throw new Exception("Por favor digite la cedula del cliente");
+    		}
+    		
+    		Long cedulaCliente = transaccion.getCedula();
+    		
+    		List<Cliente> consultaCliente = clienteLogic.findByCriteria(new Object[]{"clieId", false, cedulaCliente, "=",
+    																				 "activo", true, Constantes.ESTADO_ACTIVO, "="}, null, null);
+    		if(consultaCliente == null || consultaCliente.isEmpty()){
+    			throw new Exception("No existe el cliente con cedula "+cedulaCliente+" o no esta activo");
+    		}
+    		Cliente cliente = consultaCliente.get(0);
+    		
+    		if(!cliente.getClieId().equals(cuenta.getCliente().getClieId())){
+    			throw new Exception("La cuenta no pertenece a la cédula indicada");
+    		}
+    		
+    		if(transaccion.getCuenta() == null){
+    			throw new Exception("Por favor digite la clave de la cuenta");
+    		}
+    		
+    		if(transaccion.getCuenta().trim().equals("")){
+    			throw new Exception("Por favor digite la clave de la cuenta");
+    		}
+    		if(!cuenta.getClave().trim().equals(transaccion.getClave().trim())){
+    			throw new Exception("Las claves no coinciden");
+    		}
+    		
+    		Double nuevoSaldo = cuenta.getSaldo() - transaccion.getValor();
+    		
+    		if(nuevoSaldo < 0){
+    			throw new Exception("No hay suficiente saldo para retirar de la cuenta");
+    		}
+    		
+    		Transaccion retiro = new Transaccion();
+    		retiro.setTranId(null);
+    		retiro.setCuenta(cuenta);
+    		retiro.setTipoTransaccion(tipoTransaccion);
+    		retiro.setUsuario(usuario);
+    		retiro.setFecha(new Date());
+    		retiro.setValor(valor);
+    		
+    		this.saveTransaccion(retiro);
+    		
+    		cuenta.setSaldo(nuevoSaldo);
+    		
+    		logicCuenta1.updateCuenta(cuenta);
+			
+    		response = new Response();
+			response.setCodigo("0");
+			response.setMensaje("Retiro realizado exitosamente");
+			response.setNombre("Retiro realizado exitosamente");
+			
+    		log.info("### Se ha realizado la transacción exitosamente ###");
+		} catch (Exception e) {
+			
+			response = new Response();
+			response.setCodigo("1");
+			response.setMensaje(e.getMessage());
+			response.setNombre(e.getMessage());
+			log.error("#### Transaccion Fallida ####", e);
+		}
+    	
+    	return response;
+    	
+    }
+    
 }

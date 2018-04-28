@@ -1,5 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 
+import { UsuarioService } from '../usuario.service';
+import { Router, ActivatedRoute } from '@angular/router';
+
 /*
 - feather-icons is a directory installed in node_modules.
 - I dont have to specify the whole path like '../node_modules/path/to/feather-icons'.
@@ -15,8 +18,15 @@ import * as feather from 'feather-icons';
   styleUrls: ['./dashboard.component.css']
 })
 export class DashboardComponent implements OnInit {
-
-  constructor() { }
+  user: string;
+  constructor(private router: Router,
+    private usuarioService: UsuarioService) {
+    if(usuarioService.userInSession == null){
+      this.router.navigate(['/']);
+    }else{
+      this.user = 'Bienvenido, ' + usuarioService.userInSession;
+    }
+  }
 
   ngOnInit() {
     feather.replace();

@@ -1,6 +1,8 @@
 package com.vortexbird.bank.model.control;
 
 import com.vortexbird.bank.model.Transaccion;
+import com.vortexbird.bank.model.dto.Response;
+import com.vortexbird.bank.model.dto.TransaccionAngular;
 import com.vortexbird.bank.model.dto.TransaccionDTO;
 
 import java.math.BigDecimal;
@@ -56,4 +58,8 @@ public interface ITransaccionLogic {
 
     public void validateTransaccion(Transaccion transaccion)
         throws Exception;
+    
+    public Response consignar(TransaccionAngular transaccion) throws Exception;
+    
+    public Response retirar(TransaccionAngular transaccion) throws Exception;
 }

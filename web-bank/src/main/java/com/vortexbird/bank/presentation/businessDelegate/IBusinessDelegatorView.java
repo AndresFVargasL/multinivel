@@ -31,6 +31,7 @@ import com.vortexbird.bank.model.dto.Response;
 import com.vortexbird.bank.model.dto.TipoDocumentoDTO;
 import com.vortexbird.bank.model.dto.TipoTransaccionDTO;
 import com.vortexbird.bank.model.dto.TipoUsuarioDTO;
+import com.vortexbird.bank.model.dto.TransaccionAngular;
 import com.vortexbird.bank.model.dto.TransaccionDTO;
 import com.vortexbird.bank.model.dto.UsuarioDTO;
 
@@ -267,4 +268,8 @@ public interface IBusinessDelegatorView {
         throws Exception;
     
     public Response autenticar(String usuUsuario, String clave);
+    
+    public Response consignar(TransaccionAngular transaccion) throws Exception;
+    
+    public Response retirar(TransaccionAngular transaccion) throws Exception;
 }

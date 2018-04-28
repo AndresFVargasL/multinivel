@@ -425,25 +425,33 @@ public class UsuarioLogic implements IUsuarioLogic {
         Response response = null;
 
         try {
+        	if(usuUsuario == null || clave == null){
+        		throw new Exception("Por favor ingrese usuario y clave");
+        	}
+        	
+        	if(usuUsuario.trim().equals("") || clave.trim().equals("")){
+        		throw new Exception("Por favor ingrese usuario y clave");
+        	}
+        	
             List<Usuario> consultaUsuarios = findByCriteria(new Object[]{"usuUsuario",true, usuUsuario, "=",
             															"clave",true, clave, "=",
             															"activo",true, Constantes.ESTADO_ACTIVO, "="}, null, null);
             response = new Response();
             if(consultaUsuarios == null || consultaUsuarios.isEmpty()){
-            	response.setCodigo("1");
-            	response.setMensaje("Usuario o Clave incorrectos.");
-            	response.setNombre("Usuario o Clave incorrectos.");
+            	throw new Exception("Usuario y clave incorrectos");
             }else{
             	response.setCodigo("0");
             	response.setMensaje("Usuario autenticado exitosamente");
             	response.setNombre(consultaUsuarios.get(0).getNombre().trim());
+            	response.setUsuario(consultaUsuarios.get(0).getUsuUsuario().trim());
             }
             log.info("### Usuario con login: << "+usuUsuario+" >> autenticado exitosamente ###");
         } catch (Exception e) {
         	response = new Response();
         	response.setCodigo("1");
-        	response.setMensaje("Usuario o Clave incorrectos.");
-        	response.setNombre("Usuario o Clave incorrectos.");
+        	response.setMensaje(e.getMessage());
+        	response.setNombre(e.getMessage());
+        	response.setUsuario("");
             log.error("#### Autenticación Fallida ####", e);
         }
 
